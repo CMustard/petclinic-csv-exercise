@@ -41,31 +41,35 @@ public class ImportCSV {
 
         /*int i = 0;*/
         List<Pet> pets = new LinkedList<Pet>();
-        Pet pet;
 
-        List<String> splitCSV = segment_csv_into_string_list(csv);
-        pet = convert_string_list_to_pet( splitCSV );
-        // DON'T FORGET TO ADD ERROR HANDLING FOR pet.setOwner:
-        // return new ResponseEntity<List<Pet>>(headers, HttpStatus.BAD_REQUEST);
+        List<String> csv_lines = convert_string_to_lines(csv);
+        for (String line : csv_lines) {
+            List<String> splitCSV = segment_csv_into_string_list(line);
+            Pet pet = convert_string_list_to_pet( splitCSV );
+            // DON'T FORGET TO ADD ERROR HANDLING FOR pet.setOwner:
+            // return new ResponseEntity<List<Pet>>(headers, HttpStatus.BAD_REQUEST);
 
-        if (splitCSV.get(4).toLowerCase().equals("add")) {
-            clinicService.savePet(pet);
-        } else {
-            removePetFromOwner(pet);
+            if (splitCSV.get(4).toLowerCase().equals("add")) {
+                clinicService.savePet(pet);
+            } else {
+                removePetFromOwner(pet);
+            }
+
+            pets.add(pet);
         }
-
-        pets.add(pet);
 
         return new ResponseEntity<List<Pet>>(pets, HttpStatus.OK);
     }
 
+    private List<String> convert_string_to_lines(String csv_chain)
+    {
+      List<String> lines = Arrays.asList(csv_chain.split("\n"));
+      return lines;
+    }
 
     private List<String> segment_csv_into_string_list(String csv)
     {
-        List<String> entries;
-
-        entries = Arrays.asList(csv.split(";"));
-
+        List<String> entries = Arrays.asList(csv.split(";"));
         return entries;
     }
 
